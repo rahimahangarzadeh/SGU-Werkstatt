@@ -1,13 +1,13 @@
 // Service Worker for SGU-Inspektion PWA
-const CACHE_NAME = 'sgu-inspektion-v2';
+const CACHE_NAME = 'sgu-inspektion-v3-fix';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
   'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;600;700&display=swap',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
@@ -66,10 +66,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
+        return fetch(event.request).then((response) => {
           // Check if valid response
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
@@ -86,7 +83,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         }).catch(() => {
           // Return offline page if available
-          return caches.match('/index.html');
+          return caches.match('./index.html');
         });
       })
   );
@@ -100,6 +97,5 @@ self.addEventListener('sync', (event) => {
 });
 
 async function syncForms() {
-  // This would sync any forms saved locally when offline
   console.log('Syncing forms...');
 }
