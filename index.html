@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a18">
+  <meta name="description" content="SGU-Inspektion Magazin & Werkstatt - Janning Group">
+  <title>SGU-Inspektion Magazin & Werkstatt</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-block">
+        <div class="logo-main">Janning Group</div>
+        <div class="logo-sub">Sicherheit</div>
+      </div>
+      <div class="header-stripe"></div>
+      <div class="form-title-block">
+        <div class="form-title">SGU-Inspektion</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="form-container">
+    <!-- PAGE TITLE -->
+    <div class="page-title-block">
+      <h1 class="page-title">SGU-Inspektion Magazin & Werkstatt</h1>
+      <p class="page-subtitle">Begehungen sind monatlich durch den ArbeitsstättenVerantwortlichen durchzuführen.</p>
+    </div>
+
+    <!-- TÄTIGKEIT BUTTON -->
+    <div class="template-buttons">
+      <span class="template-label">Tätigkeit:</span>
+      <button type="button" class="template-btn" id="tatigkeitBtn">Magazin & Werkstatt</button>
+    </div>
+
+    <!-- FORM -->
+    <form id="sguForm">
+      <!-- BEREICH 1 -->
+      <section class="form-section">
+        <div class="section-label">
+          <div class="section-num">01</div>
+          <div class="section-name">Allgemeine Angaben</div>
+        </div>
+        <div class="fields-grid">
+          <div class="field-group">
+            <label class="field-label required">Datum</label>
+            <input type="datetime-local" class="field-input" name="datum" id="datum" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label required">E-Mail-Adresse für Zustellung</label>
+            <input type="email" class="field-input" name="email" id="email" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label required">Name des Arbeitsverantwortlichen</label>
+            <input type="text" class="field-input" name="name_verantwortlicher" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label required">Firma</label>
+            <div class="checkbox-group">
+              <label class="check-item">
+                <input type="checkbox" name="firma" value="Janning Tiefbau">
+                <span class="check-box"></span>
+                <span>Janning Tiefbau</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" name="firma" value="Janning Bohrtechnik">
+                <span class="check-box"></span>
+                <span>Janning Bohrtechnik</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" name="firma" value="Janning Rohrbau">
+                <span class="check-box"></span>
+                <span>Janning Rohrbau</span>
+              </label>
+            </div>
+          </div>
+          <div class="field-group full-width">
+            <label class="field-label required">Baustelle</label>
+            <div class="map-field-row">
+              <input type="text" class="field-input" name="baustelle" id="baustelleInput" required placeholder="Adresse eingeben oder Karte nutzen">
+              <button type="button" class="map-btn" id="openMapBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Karte öffnen
+              </button>
+            </div>
+            <input type="hidden" name="baustelle_lat" id="baustelleLat">
+            <input type="hidden" name="baustelle_lng" id="baustelleLng">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Arbeitgeber</label>
+            <input type="text" class="field-input" name="arbeitgeber">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Auftragsnummer</label>
+            <input type="text" class="field-input" name="auftragsnummer">
+          </div>
+          <div class="field-group full-width">
+            <label class="field-label">Weitere Teilnehmer</label>
+            <textarea class="field-textarea" name="weitere_teilnehmer" rows="2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- BEREICH 2 -->
+      <section class="form-section">
+        <div class="section-label">
+          <div class="section-num">02</div>
+          <div class="section-name">Sicherheit & Organisation</div>
+        </div>
+        <div class="fields-grid">
+          <!-- Allgemeine Ordnung -->
+          <div class="field-group full-width">
+            <label class="field-label required">Allgemeine Ordnung und Sauberkeit?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="ordnung_sauberkeit" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="ordnung_sauberkeit" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="ordnung_sauberkeit_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="ordnung_sauberkeit_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Unterweisungen -->
+          <div class="field-group full-width">
+            <label class="field-label required">Unterweisungen durchgeführt?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="unterweisungen" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="unterweisungen" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="unterweisungen_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="unterweisungen_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Gefährdungsbeurteilung -->
+          <div class="field-group full-width">
+            <label class="field-label required">Gefährdungsbeurteilung vorhanden und aktuell?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="gefaehrdungsbeurteilung" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="gefaehrdungsbeurteilung" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="gefaehrdungsbeurteilung_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="gefaehrdungsbeurteilung_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- LMRA -->
+          <div class="field-group full-width">
+            <label class="field-label required">LMRA täglich durchgeführt?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="lmra" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="lmra" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="lmra_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="lmra_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Toolbox-Meeting -->
+          <div class="field-group full-width">
+            <label class="field-label required">Toolbox-Meeting monatlich durchgeführt?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="toolbox_meeting" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="toolbox_meeting" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text" data-conditional="toolbox_meeting_always">
+              <label class="field-label">Thema</label>
+              <textarea class="field-textarea" name="toolbox_meeting_thema" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Ersthelfer -->
+          <div class="field-group full-width">
+            <label class="field-label required">Ausreichend Ersthelfer vorhanden?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="ersthelfer" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="ersthelfer" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="ersthelfer_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="ersthelfer_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Sicherheitspass -->
+          <div class="field-group full-width">
+            <label class="field-label required">Sicherheitspass vorhanden?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="sicherheitspass" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="sicherheitspass" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="sicherheitspass_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="sicherheitspass_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- PSA vorhanden -->
+          <div class="field-group full-width">
+            <label class="field-label required">Geforderte PSA vorhanden und genutzt?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="psa_vorhanden" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="psa_vorhanden" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="psa_vorhanden_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="psa_vorhanden_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- PSA Zustand -->
+          <div class="field-group full-width">
+            <label class="field-label required">Zustand der PSA?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="psa_zustand" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="psa_zustand" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="psa_zustand_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="psa_zustand_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BEREICH 3 -->
+      <section class="form-section">
+        <div class="section-label">
+          <div class="section-num">03</div>
+          <div class="section-name">Betriebsmittel & Umwelt</div>
+        </div>
+        <div class="fields-grid">
+          <!-- Gefahrstoffe -->
+          <div class="field-group full-width">
+            <label class="field-label required">Umgang / Lagerung von gefährlichen / umweltbelastenden Stoffen und Gefahrstoffen?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="gefahrstoffe" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="gefahrstoffe" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="gefahrstoffe_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="gefahrstoffe_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Erste Hilfe -->
+          <div class="field-group full-width">
+            <label class="field-label required">Zustand Erste-Hilfe-Ausrüstung?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="erste_hilfe" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="erste_hilfe" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="erste_hilfe_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="erste_hilfe_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Feuerlöscher -->
+          <div class="field-group full-width">
+            <label class="field-label required">Zustand Feuerlöscher?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="feuerloescher" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="feuerloescher" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="feuerloescher_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="feuerloescher_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Fahrzeuge -->
+          <div class="field-group full-width">
+            <label class="field-label required">Zustand Fahrzeuge und Geräte?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="fahrzeuge_geraete" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="fahrzeuge_geraete" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="fahrzeuge_geraete_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="fahrzeuge_geraete_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Leitern -->
+          <div class="field-group full-width">
+            <label class="field-label required">Aufgänge, Leitern, Absturzsicherungen?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="leitern_absturz" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="leitern_absturz" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="leitern_absturz_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="leitern_absturz_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Regale -->
+          <div class="field-group full-width">
+            <label class="field-label required">Regale monatliche Sichtkontrolle?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="regale" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="regale" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="regale_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="regale_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Ölabscheider -->
+          <div class="field-group full-width">
+            <label class="field-label required">Ölabscheider / Eintrag Betriebstagebuch?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="oelabscheider" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="oelabscheider" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="oelabscheider_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="oelabscheider_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Abfallentsorgung -->
+          <div class="field-group full-width">
+            <label class="field-label required">Abfallentsorgung? Getrennte Sammlung?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="abfallentsorgung" value="i.O." required>
+                <span class="radio-btn"></span>
+                <span>i.O.</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="abfallentsorgung" value="n.i.O.">
+                <span class="radio-btn"></span>
+                <span>n.i.O.</span>
+              </label>
+            </div>
+            <div class="conditional-text hidden" data-conditional="abfallentsorgung_nio">
+              <label class="field-label">Begründung</label>
+              <textarea class="field-textarea" name="abfallentsorgung_begruendung" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Beinaheunfälle -->
+          <div class="field-group full-width">
+            <label class="field-label">Meldungen von Beinaheunfällen und gefährlichen Situationen</label>
+            <textarea class="field-textarea" name="beinaheunfaelle" rows="4"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- BEREICH 4: MASSNAHMEN -->
+      <section class="form-section">
+        <div class="section-label">
+          <div class="section-num">04</div>
+          <div class="section-name">Empfehlungen / Maßnahmen</div>
+        </div>
+        <div class="fields-grid">
+          <div class="field-group full-width">
+            <div id="massnahmenContainer">
+              <table id="massnahmenTable" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                  <tr style="background: var(--section-num-bg); color: #fff;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid var(--border);">Maßnahme</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid var(--border); width: 200px;">Verantwortlich</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid var(--border); width: 120px;">Erledigt</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid var(--border); width: 60px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="massnahmenBody">
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid var(--border);">
+                      <input type="text" class="field-input" name="massnahme_text_0" style="margin: 0;">
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--border);">
+                      <input type="text" class="field-input" name="massnahme_verantwortlich_0" style="margin: 0;">
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--border);">
+                      <input type="date" class="field-input" name="massnahme_erledigt_0" style="margin: 0;">
+                    </td>
+                    <td style="padding: 8px; border: 1px solid var(--border); text-align: center;">
+                      <button type="button" class="remove-row-btn" onclick="removeRow(this)" style="background: #c82020; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">✕</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" id="addMassnahmeBtn" style="margin-top: 12px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer;">+ Zeile hinzufügen</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUBMIT -->
+      <div class="submit-area">
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          Formular absenden
+        </button>
+      </div>
+
+      <div id="formMessage" class="form-message hidden"></div>
+    </form>
+  </main>
+
+  <!-- MAP MODAL -->
+  <div id="mapModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>Baustelle auswählen</span>
+        <button type="button" class="modal-close" id="closeMapBtn">✕</button>
+      </div>
+      <div class="map-search-row">
+        <input type="text" class="field-input" id="mapSearchInput" placeholder="Adresse suchen...">
+        <button type="button" class="map-search-btn" id="mapSearchBtn">Suchen</button>
+      </div>
+      <div id="leafletMap"></div>
+      <div class="modal-footer">
+        <div class="selected-addr" id="selectedAddress">Klicken Sie auf die Karte, um einen Standort auszuwählen</div>
+        <button type="button" class="map-search-btn" id="confirmMapBtn">Übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
