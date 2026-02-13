@@ -5,7 +5,8 @@
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
+    // Registriere SW relativ, damit es auch in Unterverzeichnissen geht
+    navigator.serviceWorker.register('./service-worker.js')
       .then(reg => console.log('Service Worker registered:', reg))
       .catch(err => console.log('Service Worker registration failed:', err));
   });
